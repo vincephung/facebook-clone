@@ -12,7 +12,13 @@ router.get(
   }),
   UserController.getUser
 );
-
+router.get(
+  '/:id/posts',
+  passport.authenticate('jwt', {
+    session: false,
+  }),
+  UserController.getUserPosts
+);
 //create new user / sign up
 //MAKE SURE TO ADD AUTHENTICATION
 router.post('/', UserController.createUser);

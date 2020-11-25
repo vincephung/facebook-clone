@@ -4,6 +4,7 @@ const { validationResult, body } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
+const Post = require('../models/Post');
 
 exports.getAllUsers = function (req, res) {
   User.find({}).then((users) => {
@@ -19,12 +20,53 @@ exports.getUser = function (req, res) {
   User.findById(req.params.id)
     .populate('posts')
     .populate('friends')
+    .populate({
+      path: 'friendRequests',
+      populate: {
+        path: 'fromUser',
+        model: 'User',
+        select: 'firstName lastName profilePicture',
+      },
+    })
+    .populate({
+      path: 'friendRequests',
+      populate: {
+        path: 'toUser',
+        model: 'User',
+        select: 'firstName lastName profilePicture',
+      },
+    })
     .then((user) => {
       if (!user) {
         res.json({ error: 'User does not exist' });
         return;
       }
       res.status(200).json(user); //successfully retrieve user
+    });
+};
+
+// GET ALL POSTS FROM ONE USER
+exports.getUserPosts = function (req, res, next) {
+  Post.find({ user: { $eq: req.params.id } })
+    .populate({
+      path: 'comments',
+      populate: {
+        path: 'user',
+        model: 'User',
+        select: 'firstName lastName profilePicture',
+      },
+    })
+    .populate('user', 'firstName lastName profilePicture')
+    .populate({
+      path: 'reactions',
+      populate: { path: 'user', model: 'User', select: 'firstName lastName' },
+    })
+    .sort({ _id: -1 })
+    .then((posts) => {
+      res.status(200).json(posts);
+    })
+    .catch((err) => {
+      next(err);
     });
 };
 
@@ -173,8 +215,8 @@ exports.logIn = [
 
 //NEED TO FINISH SEARCH ENGINE
 exports.searchUsers = function (req, res, next) {
-  let searchInfo = req.query.search || '';
-  console.log(req.query.search);
+  let searchInfo = req.query.q || '';
+  console.log(req.query.q);
 
   User.find(
     {

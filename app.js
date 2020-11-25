@@ -4,9 +4,11 @@ var cors = require('cors');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const socket = require('socket.io');
+/*
 let bodyParser = require('body-parser');
 var multipart = require('connect-multiparty');
-const socket = require('socket.io');
+*/
 
 //handle database
 require('./mongoConfig');
@@ -88,9 +90,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
-app.use(bodyParser.json()); // Send JSON responses
+/*app.use(bodyParser.json()); // Send JSON responses
 app.use(bodyParser.urlencoded({ extended: true })); // Parses urlencoded bodies
 app.use(multipart());
+*/
 
 //NEED TO CHANGE THE ROUTE HERE!!!!
 app.use('/', indexRouter);

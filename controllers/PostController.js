@@ -5,13 +5,14 @@ const { validationResult, body } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const User = require('../models/User');
-const cloudinary = require('cloudinary').v2;
+const cloudinary = require('cloudinary');
 
-cloudinary.config({
+/*cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.API_KEY,
   api_secret: process.env.API_SECRET,
 });
+*/
 
 //get all users and the users friends posts
 exports.getAllPosts = function (req, res) {
@@ -72,23 +73,25 @@ exports.createPost = [
     if (!errors.isEmpty()) {
       return res.status(400).json({ message: errors.errors });
     }
-
-    cloudinary.uploader.upload(req.body.picture, {}, (err, uploadedPicture) => {
-      const newPost = new Post({
-        timeStamp: moment().format('MMMM Do[,] YYYY'),
-        text: req.body.text,
-        user: req.body.user_id,
-        picture: uploadedPicture.url,
-      });
-      newPost
-        .save()
-        .then((newPost) => {
-          res.json({ message: 'New Post successful', newPost });
-        })
-        .catch((err) => {
-          return next(err);
-        });
+    const newPost = new Post({
+      timeStamp: moment().format('MMMM Do[,] YYYY'),
+      text: req.body.text,
+      user: req.body.user_id,
+      picture: req.body.picture,
     });
+    newPost
+      .save()
+      .then((newPost) => {
+        newPost
+          .populate('user', 'firstName lastName profilePicture')
+          .execPopulate()
+          .then((populatedPost) => {
+            res.json({ message: 'New Post successful', newPost });
+          });
+      })
+      .catch((err) => {
+        return next(err);
+      });
   },
 ];
 

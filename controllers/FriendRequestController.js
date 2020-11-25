@@ -14,7 +14,7 @@ exports.createFriendRequest = function (req, res, next) {
     res.status(400).json({ message: errors.errors });
   }
 
-  newFriendRequest = new FriendRequest({
+  const newFriendRequest = new FriendRequest({
     timeStamp: moment().format('MMMM Do[,] YYYY'),
     status: 'Pending',
     fromUser: req.params.fromUserId,
@@ -26,7 +26,7 @@ exports.createFriendRequest = function (req, res, next) {
       $push: { friendRequests: friendRequest },
     })
       .then((fromUser) => {
-        User.findByIdAndUpdate(req.params.toUser, {
+        User.findByIdAndUpdate(req.params.toUserId, {
           $push: { friendRequests: friendRequest },
         }).then((toUser) => {
           res
