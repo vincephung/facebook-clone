@@ -1,6 +1,6 @@
 # Facebook Clone Backend
 
-This is the back end view of the Facebook Clone Project. The front end can be found here.  https://github.com/vincephung/facebook-clone
+This is the back end view of the Facebook Clone Project. The front end can be found here.  https://github.com/vincephung/facebook-clone-frontend
 
 It includes an API that the front end makes calls to.
 
