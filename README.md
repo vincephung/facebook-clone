@@ -17,6 +17,8 @@ The front end can be found here.  https://github.com/vincephung/facebook-clone-f
 * json web tokens (used to store/authenticate user sessions)
 * bycrpt (used to encrypt passwords)
 
+## Preview
+![](preview.png?raw=true "Optional Title")
 
 ## Requirements
 
